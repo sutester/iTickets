@@ -1,12 +1,10 @@
-#!/usr/bin/env python
-# encoding: utf-8
-'''
-@author: Danny
-@contact: kedanlin@hotmail.com
-@file: split_text.py.py
-@time: 2019/5/23 21:42
-@desc:
-'''
+#!/usr/local/bin/pyenv/python
+# -*- coding: utf-8 -*-
+# @Author: Danny
+# @Date: 2019-05-24 14:11:22
+# @Last Modified by:   Danny
+# @Last Modified time: 2019-05-24 14:11:22
+
 img_key = '对应'
 math_key = '计算'
 str1 = '请点击计算的结果XXX'
