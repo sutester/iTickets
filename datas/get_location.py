@@ -22,5 +22,5 @@ def get_location(index):
 if __name__ == '__main__':
     #test
     print(get_location(7))
-    print(get_location('a'))
-    print(get_location(8))
+    #print(get_location('a'))
+    #print(get_location(8))

@@ -55,7 +55,7 @@ def get_doctor_list(sessionid):
     params = {"g": "WapApi", "m": "Register", "a": "getDoctorList"}
     data = {
         "deptId": "16",
-        "date": "2019-05-31",
+        "date": appointmentDate,
         "SessionType": "",
         "LabelId": "0",
         "districtCode": "2"
@@ -83,16 +83,22 @@ def get_doctor_detail(sessionid):
     params = {"g": "WapApi", "m": "Register", "a": "getDoctorDetail"}
     data = {
         "doctorid": "3610",
-        "date": "2019-05-31",
+        "date": appointmentDate,
         "LabelId": "0",
         "districtCode": "2"
     }
-    response = S.post(
-        Host, headers=header, params=params, data=data, verify=False).json()
-    return response
+    response = S.post(Host, headers=header, params=params, data=data, verify=False).json()
+
+    for i in range (len(response['data']['schedul'])):
+        if response['data']['schedul'][i]['date'] == appointmentDate:
+            scheduleId = response['data']['schedul'][i]['schedulid']
+    '''
+    Here now returns only schedule id which is different with others.
+    '''
+    return scheduleId
 
 
-def get_card_list(sessionid):
+def get_card_list(sessionid,patientName):
     header = {
         "Accept":
         "*/*",
@@ -109,7 +115,14 @@ def get_card_list(sessionid):
     }
     params = {"g": "WapApi", "m": "Card", "a": "cardList"}
     response = S.get(Host, headers=header, params=params, verify=False).json()
-    return response
+    for i in range (len(response['data']['cardList'])):
+        if response['data']['cardList'][i]['userName'] == patientName:
+            userid = response['data']['cardList'][i]['userid']
+    '''
+    Here now returns only user id which is different with others.
+    '''
+
+    return userid
 
 
 def get_reg_queue_start(sessionid):
@@ -164,13 +177,18 @@ def create_verify(sessionid):
     timeArray = time.strptime(times, "%Y-%m-%d %H:%M:%S")
     timeStamp = int(time.mktime(timeArray))
 
-    with open(FilePath + 'MathTest' + str(timeStamp) + '.jpg', 'wb') as f:
+    #with open(FilePath + 'MathTest' + str(timeStamp) + '.jpg', 'wb') as f:
+    with open(FilePath + 'Math' + '.jpg', 'wb') as f:
         f.write(response.content)
         f.close()
-    #return response.text
+    return response
+    
 
+'''
+change the name of the funtion to follow the URL parameter. This would be easily to locate from charles
 
-def submit_order(sessionid):
+'''
+def submit_Reg(sessionid):
     header = {
         "Accept":
             "*/*",
@@ -188,7 +206,7 @@ def submit_order(sessionid):
     params = {"g": "WapApi", "m": "Register", "a": "submitReg"}
     data = {
         "tagArray": "90,496",
-        "schedulid": "39789",
+        "schedulid": "41282",
         "userid": "2201256",
         "is_ai": "",
         "token":"wx155869757230528"
@@ -225,11 +243,17 @@ if __name__ == '__main__':
     import io, sys
     sys.stdout = io.TextIOWrapper(sys.stdout.detach(), encoding='utf-8')
     sys.stderr = io.TextIOWrapper(sys.stderr.detach(), encoding='utf-8')
-    sessionid = 'qra14valb8b4c7r4oq08l265g4'
-    print(get_departments_list(sessionid))
-    # print(get_doctor_detail())
-    # print(get_doctor_list())
-    # print(get_card_list())
+    patientName = '柯骚骚'
+    appointmentDate = '2019-05-31'
+    sessionid = 'ktd65jqcof2fq81gmogmrjdl34'
+    #print(get_departments_list(sessionid))
+    #print(get_doctor_list(sessionid))
+    
+    #Get schedule id here
+    #print(get_doctor_detail(sessionid))
+
+    #Get user id here
+    #print(get_card_list(sessionid,patientName))
     # print(get_reg_queue_start())
-    # print(create_verify())
+    print(create_verify(sessionid))
     # print(get_unpaid_list())
