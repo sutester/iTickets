@@ -91,7 +91,7 @@ env.bak/
 venv.bak/
 .vscode/
 .idea/
-
+images/captchaSource/
 # Spyder project settings
 .spyderproject
 .spyproject
