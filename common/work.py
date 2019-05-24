@@ -17,7 +17,7 @@ FilePath = r'./images/captchaSource/'
 Host = r'https://huaxi2.mobimedical.cn/index.php'
 
 
-def get_departments_list():
+def get_departments_list(sessionid):
     header = {
         "Accept":
         "*/*",
@@ -28,7 +28,7 @@ def get_departments_list():
         "Referer":
         r"https://huaxi2.mobimedical.cn/index.php?g=Wap&m=WxView&d=registerAndAppoint&a=index",
         "Cookie":
-        "PHPSESSID=qra14valb8b4c7r4oq08l265g4"
+        "PHPSESSID={}".format(sessionid)
     }
     params = {"g": "WapApi", "m": "Register", "a": "dutyDeptList", "ts": "0"}
     response = S.get(Host, headers=header, params=params, verify=False).json()
@@ -37,7 +37,7 @@ def get_departments_list():
     return response
 
 
-def get_doctor_list():
+def get_doctor_list(sessionid):
     header = {
         "Accept":
         "*/*",
@@ -50,7 +50,7 @@ def get_doctor_list():
         "Referer":
         r"https://huaxi2.mobimedical.cn/index.php?g=Wap&m=WxView&d=registerAndAppoint&a=index",
         "Cookie":
-        "PHPSESSID=bd94eag0mllub549a5ugqi9u07"
+        "PHPSESSID={}".format(sessionid)
     }
     params = {"g": "WapApi", "m": "Register", "a": "getDoctorList"}
     data = {
@@ -65,7 +65,7 @@ def get_doctor_list():
     return response
 
 
-def get_doctor_detail():
+def get_doctor_detail(sessionid):
     header = {
         "Accept":
         "*/*",
@@ -78,7 +78,7 @@ def get_doctor_detail():
         "Referer":
         r"https://huaxi2.mobimedical.cn/index.php?g=Wap&m=WxView&d=registerAndAppoint&a=index",
         "Cookie":
-        "PHPSESSID=bd94eag0mllub549a5ugqi9u07"
+        "PHPSESSID={}".format(sessionid)
     }
     params = {"g": "WapApi", "m": "Register", "a": "getDoctorDetail"}
     data = {
@@ -92,7 +92,7 @@ def get_doctor_detail():
     return response
 
 
-def get_card_list():
+def get_card_list(sessionid):
     header = {
         "Accept":
         "*/*",
@@ -105,14 +105,14 @@ def get_card_list():
         "Referer":
         r"https://huaxi2.mobimedical.cn/index.php?g=Wap&m=WxView&d=registerAndAppoint&a=index",
         "Cookie":
-        "PHPSESSID=qra14valb8b4c7r4oq08l265g4"
+        "PHPSESSID={}".format(sessionid)
     }
     params = {"g": "WapApi", "m": "Card", "a": "cardList"}
     response = S.get(Host, headers=header, params=params, verify=False).json()
     return response
 
 
-def get_reg_queue_start():
+def get_reg_queue_start(sessionid):
     header = {
         "Accept":
         "*/*",
@@ -125,7 +125,7 @@ def get_reg_queue_start():
         "Referer":
         r"https://huaxi2.mobimedical.cn/index.php?g=Wap&m=WxView&d=registerAndAppoint&a=index",
         "Cookie":
-        "PHPSESSID=bd94eag0mllub549a5ugqi9u07"
+        "PHPSESSID={}".format(sessionid)
     }
     params = {
         "g": "WapApi",
@@ -137,7 +137,7 @@ def get_reg_queue_start():
     return response
 
 
-def create_verify():
+def create_verify(sessionid):
     header = {
         "Accept":
         "*/*",
@@ -150,7 +150,7 @@ def create_verify():
         "Referer":
         r"https://huaxi2.mobimedical.cn/index.php?g=Wap&m=WxView&d=registerAndAppoint&a=index",
         "Cookie":
-        "PHPSESSID=bd94eag0mllub549a5ugqi9u07"
+        "PHPSESSID={}".format(sessionid)
     }
     params = {
         "g": "WapApi",
@@ -170,7 +170,7 @@ def create_verify():
     #return response.text
 
 
-def submit_order():
+def submit_order(sessionid):
     header = {
         "Accept":
             "*/*",
@@ -183,7 +183,7 @@ def submit_order():
         "Referer":
             r"https://huaxi2.mobimedical.cn/index.php?g=Wap&m=WxView&d=registerAndAppoint&a=index",
         "Cookie":
-            "PHPSESSID=qra14valb8b4c7r4oq08l265g4"
+            "PHPSESSID={}".format(sessionid)
     }
     params = {"g": "WapApi", "m": "Register", "a": "submitReg"}
     data = {
@@ -199,7 +199,7 @@ def submit_order():
     assert response.get('errorMsg') == '成功'
     return response
 
-def get_unpaid_list():
+def get_unpaid_list(sessionid):
     header = {
         "Accept":
             "*/*",
@@ -212,7 +212,7 @@ def get_unpaid_list():
         "Referer":
             r"https://huaxi2.mobimedical.cn/index.php?g=Wap&m=WxView&d=registerAndAppoint&a=index",
         "Cookie":
-            "PHPSESSID=qra14valb8b4c7r4oq08l265g4"
+            "PHPSESSID={}".format(sessionid)
     }
     params = {"g": "WapApi", "m": "OrderApi", "a": "waitPayList"}
     response = S.get(
@@ -225,10 +225,11 @@ if __name__ == '__main__':
     import io, sys
     sys.stdout = io.TextIOWrapper(sys.stdout.detach(), encoding='utf-8')
     sys.stderr = io.TextIOWrapper(sys.stderr.detach(), encoding='utf-8')
-    # print(get_departments_list())
+    sessionid = 'qra14valb8b4c7r4oq08l265g4'
+    print(get_departments_list(sessionid))
     # print(get_doctor_detail())
     # print(get_doctor_list())
-    print(get_card_list())
+    # print(get_card_list())
     # print(get_reg_queue_start())
-    #print(create_verify())
-    print(get_unpaid_list())
+    # print(create_verify())
+    # print(get_unpaid_list())
