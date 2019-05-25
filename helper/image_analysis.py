@@ -6,7 +6,7 @@
 # @Last Modified time: 2019-05-24 14:09:38
 
 import cut_img,testIdentifier
-FilePath = r'./images/captchaSource/'
+FilePath = r'../images/'
 cut_img.cut_answer('math.jpg')
 cut_img.cut_question('math.jpg', 'math_question.jpg')
 ci = testIdentifier.captchaIdentifier(FilePath+'math_question.jpg')

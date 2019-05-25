@@ -12,7 +12,7 @@ answers_location = [(150, 355, 0, 206), (150, 355, 206, 412),
                                                                  206),
                     (355, 558, 206, 412), (355, 558, 412, 618), (355, 558, 618,
                                                                  824)]
-FilePath = r'./images/captchaSource/'
+FilePath = r'../images/'
 
 
 def cut_question(old_file_name, question_file_name):
