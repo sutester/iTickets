@@ -1,11 +1,4 @@
 # encoding:utf-8
-import base64
-
-
-def get_image(file_path):
-    with open(file_path,'rb') as f:
-        return base64.b64encode(f.read())
-
 '''
 captcha identify
 '''
@@ -43,6 +36,10 @@ if __name__ == '__main__':
     FilePath = r'../images/'
     from requests import session
     s = session()
+    import base64
+    def get_image(file_path):
+        with open(file_path, 'rb') as f:
+            return base64.b64encode(f.read())
     ci = captchaIdentifier(s)
     print(ci.getText(get_image(FilePath+'test_question.jpg')))
 
