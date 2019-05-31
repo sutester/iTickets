@@ -13,11 +13,20 @@ from datetime import datetime
 import os, time
 
 S = session()
-FilePath = r'./images/captchaSource/'
+FilePath = r'../images/'
 Host = r'https://huaxi2.mobimedical.cn/index.php'
 
+def get_day():
+    import datetime
+    return (datetime.datetime.now() + datetime.timedelta(days=14)).strftime("%Y-%m-%d")
 
-def get_departments_list(sessionid):
+
+def get_departments_list(sessionid, dep_name):
+    '''
+    :param sessionid:
+    :param dep_name:
+    :return: Department ID by dep_name
+    '''
     header = {
         "Accept":
         "*/*",
@@ -32,12 +41,22 @@ def get_departments_list(sessionid):
     }
     params = {"g": "WapApi", "m": "Register", "a": "dutyDeptList", "ts": "0"}
     response = S.get(Host, headers=header, params=params, verify=False).json()
-    assert response.get('state') == 1
-    assert response.get('errorMsg') == '成功'
-    return response
+    if response.get('state') == 1 and response.get('errorMsg') == '成功':
+        dep_list = response.get('data')
+        for dep in dep_list:
+            if dep_name in dep.values():
+                return dep.get('deptId')
+    else:
+        raise RuntimeError('Session was invalid.')
 
 
-def get_doctor_list(sessionid):
+def get_doctor_list(sessionid,deptId,doctorName):
+    '''
+    :param sessionid:
+    :param deptId:
+    :param doctorName:
+    :return: Doctor ID by doctorName and deptId
+    '''
     header = {
         "Accept":
         "*/*",
@@ -54,18 +73,31 @@ def get_doctor_list(sessionid):
     }
     params = {"g": "WapApi", "m": "Register", "a": "getDoctorList"}
     data = {
-        "deptId": "16",
-        "date": appointmentDate,
+        "deptId": deptId,
+        "date": get_day(),
         "SessionType": "",
         "LabelId": "0",
         "districtCode": "2"
     }
     response = S.post(
         Host, headers=header, params=params, data=data, verify=False).json()
-    return response
+    if response.get('state') == 1 and response.get('errorMsg') == '成功':
+        doctor_list = response.get('data')
+        for doctor in doctor_list:
+            if doctor.get('usable') == 1:
+                if doctor.get('docName') == doctorName:
+                    return doctor.get('doctorid')
+    else:
+        raise RuntimeError('Session was invalid.')
 
 
-def get_doctor_detail(sessionid):
+def get_doctor_detail(sessionid,doctorid):
+    '''
+    :param sessionid:
+    :param doctorid:
+    :return: multiple schedulids
+    '''
+    schedulid = []
     header = {
         "Accept":
         "*/*",
@@ -82,23 +114,29 @@ def get_doctor_detail(sessionid):
     }
     params = {"g": "WapApi", "m": "Register", "a": "getDoctorDetail"}
     data = {
-        "doctorid": "3610",
-        "date": appointmentDate,
+        "doctorid": doctorid,
+        "date": get_day(),
         "LabelId": "0",
         "districtCode": "2"
     }
     response = S.post(Host, headers=header, params=params, data=data, verify=False).json()
-
-    for i in range (len(response['data']['schedul'])):
-        if response['data']['schedul'][i]['date'] == appointmentDate:
-            scheduleId = response['data']['schedul'][i]['schedulid']
-    '''
-    Here now returns only schedule id which is different with others.
-    '''
-    return scheduleId
+    if response.get('state') == 1 and response.get('errorMsg') == '成功':
+        schedul_list = response.get('data').get('schedul')
+        for schedul in schedul_list:
+            if schedul.get('usable') == 1:
+                if schedul.get('date') == get_day():
+                    schedulid.append(schedul.get('schedulid'))
+    else:
+        raise RuntimeError('Session was invalid.')
+    return schedulid
 
 
 def get_card_list(sessionid,patientName):
+    '''
+    :param sessionid:
+    :param patientName:
+    :return: userid by patientName
+    '''
     header = {
         "Accept":
         "*/*",
@@ -115,17 +153,21 @@ def get_card_list(sessionid,patientName):
     }
     params = {"g": "WapApi", "m": "Card", "a": "cardList"}
     response = S.get(Host, headers=header, params=params, verify=False).json()
-    for i in range (len(response['data']['cardList'])):
-        if response['data']['cardList'][i]['userName'] == patientName:
-            userid = response['data']['cardList'][i]['userid']
+    if response.get('state') == 1 and response.get('errorMsg') == '成功':
+        card_list = response.get('data').get('cardList')
+        for card in card_list:
+            if card.get('userName') == patientName:
+                return card.get('userid')
+    else:
+        raise RuntimeError('Session was invalid.')
+
+
+def get_reg_queue_start(sessionid,schedulid):
     '''
-    Here now returns only user id which is different with others.
+    :param sessionid:
+    :param schedulid:
+    :return: Token for submit_Reg
     '''
-
-    return userid
-
-
-def get_reg_queue_start(sessionid):
     header = {
         "Accept":
         "*/*",
@@ -144,10 +186,11 @@ def get_reg_queue_start(sessionid):
         "g": "WapApi",
         "m": "Register",
         "a": "getRegQueueStart",
-        "schedulid": "40517"
+        "schedulid": schedulid
     }
     response = S.get(Host, headers=header, params=params, verify=False).json()
-    return response
+    if response.get('state') == 1 and response.get('errorMsg') == '成功':
+        return response.get('data').get('tn')
 
 
 def create_verify(sessionid):
@@ -188,7 +231,7 @@ def create_verify(sessionid):
 change the name of the funtion to follow the URL parameter. This would be easily to locate from charles
 
 '''
-def submit_Reg(sessionid):
+def submit_Reg(sessionid,location,schedulId,userId,token):
     header = {
         "Accept":
             "*/*",
@@ -205,11 +248,11 @@ def submit_Reg(sessionid):
     }
     params = {"g": "WapApi", "m": "Register", "a": "submitReg"}
     data = {
-        "tagArray": "90,496",
-        "schedulid": "41282",
-        "userid": "2201256",
+        "tagArray": location,
+        "schedulid": schedulId,
+        "userid": userId,
         "is_ai": "",
-        "token":"wx155869757230528"
+        "token":token
     }
     response = S.post(
         Host, headers=header, params=params, data=data, verify=False).json()
@@ -238,22 +281,3 @@ def get_unpaid_list(sessionid):
     assert response.get('state') == 1
     assert response.get('errorMsg') == '成功'
     return response
-
-if __name__ == '__main__':
-    import io, sys
-    sys.stdout = io.TextIOWrapper(sys.stdout.detach(), encoding='utf-8')
-    sys.stderr = io.TextIOWrapper(sys.stderr.detach(), encoding='utf-8')
-    patientName = '柯骚骚'
-    appointmentDate = '2019-05-31'
-    sessionid = 'ktd65jqcof2fq81gmogmrjdl34'
-    #print(get_departments_list(sessionid))
-    #print(get_doctor_list(sessionid))
-    
-    #Get schedule id here
-    #print(get_doctor_detail(sessionid))
-
-    #Get user id here
-    #print(get_card_list(sessionid,patientName))
-    # print(get_reg_queue_start())
-    print(create_verify(sessionid))
-    # print(get_unpaid_list())
