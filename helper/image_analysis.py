@@ -43,16 +43,16 @@ class ImageAnalysis:
                 question = question.split('结果')[1]
                 if '加' in question:
                     m,n = question.split('加')
-                    return m + n
+                    return int(m) + int(n)
                 elif '减' in question:
                     m,n = question.split('减')
-                    return m - n
+                    return int(m) - int(n)
                 elif '乘' in question:
                     m,n = question.split('乘')
-                    return m * n
+                    return int(m) * int(n)
                 elif '除' in question:
                     m,n = question.split('除')
-                    return m / n
+                    return int(m) / int(n)
                 else:
                     raise SystemError
             else:
