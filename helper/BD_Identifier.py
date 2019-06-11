@@ -46,11 +46,11 @@ class objIdentifier():
 
 
 if __name__ == '__main__':
-    FilePath = r'./images/'
+    FilePath = r'../images/'
     from requests import session
     s = session()
     import base64
-    import io, sys
+    import io, sys,os,time
     sys.stdout = io.TextIOWrapper(sys.stdout.detach(), encoding='utf-8')
     sys.stderr = io.TextIOWrapper(sys.stderr.detach(), encoding='utf-8')
 
@@ -59,7 +59,15 @@ if __name__ == '__main__':
             return base64.b64encode(f.read())
 
     ci = captchaIdentifier(s)
-    print(ci.getText(get_image(FilePath + 'test1.png')))
+    for root, dirs, files in os.walk(FilePath):
+        for file in files:
+            if file[0:len('questionRight')] == 'questionRight':
+                time.sleep(1)
+                if len(ci.getText(get_image(FilePath + file))['words_result'])==0:
+                    os.rename(FilePath+file,FilePath+'none.jpg')
+                else:
+                    os.rename(FilePath+file,FilePath+ci.getText(get_image(FilePath + file))['words_result'][0]['words']+'.jpg')
+                #print(ci.getText(get_image(FilePath + file))['words_result'])
 
     # oid = objIdentifier(s)
     # print(oid.getText(get_image(FilePath+'banana.jpg')))

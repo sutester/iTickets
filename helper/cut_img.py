@@ -5,7 +5,7 @@
 # @Last Modified by:   Danny
 # @Last Modified time: 2019-05-24 14:05:50
 
-import cv2
+import cv2,os,time
 
 answers_location = [(150, 355, 0, 206), (150, 355, 206, 412),
                     (150, 355, 412, 618), (150, 355, 618, 824), (355, 558, 0,
@@ -15,9 +15,14 @@ answers_location = [(150, 355, 0, 206), (150, 355, 206, 412),
 FilePath = r'../images/'
 
 
-def cut_question(old_file_name, question_file_name):
+def cut_question(old_file_name, question_file_name, position):
     img = cv2.imread(FilePath + old_file_name)
-    question = img[0:150, 0:824]  # 裁剪坐标为[y0:y1, x0:x1]
+    if position == 'right':
+        question = img[0:150, 395:824]  # 裁剪坐标为[y0:y1, x0:x1]
+    elif position == 'left':
+        question = img[0:150, 0:824]  # 裁剪坐标为[y0:y1, x0:x1]
+    else:
+        raise RuntimeError('Please define the position of the question then try again.')
     cv2.imwrite(FilePath + question_file_name, question)
 
 
@@ -29,7 +34,19 @@ def cut_answer(old_file_name):
         cv2.imwrite(FilePath + str(i) + '_' + old_file_name, answer)
         i = i + 1
 
+def cut_all(prefix):
+    for root, dirs, files in os.walk(FilePath):
+        for file in files:
+            if file[0:len(prefix)] == prefix:
+                cut_question(file,'questionRight'+str(generateTS())+'.jpg','right')
+
+def generateTS():
+    timeStamp = int(round(time.time() * 1000))
+    return timeStamp
+
 
 if __name__ == '__main__':
-    cut_answer('math.jpg')
-    cut_question('math.jpg', 'math_question.jpg')
+    #cut_answer('math.jpg')
+    #cut_question('MathTest1558629663.jpg', 'MathTest1558629663_right.jpg','right')
+    cut_all('MathTest')
+    #print(generateTS())

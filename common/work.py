@@ -223,7 +223,6 @@ class Work:
         #with open(FilePath + 'MathTest' + str(timeStamp) + '.jpg', 'wb') as f:
         with open(FilePath + 'Math' + '.jpg', 'wb') as f:
             f.write(response.content)
-            f.close()
         return response
 
 
