@@ -4,7 +4,7 @@ captcha identify
 '''
 #Define access token. once the token been issued it would be validated for 30 mins.
 accessToken = '24.8603abe537c4061b66b3dbe1875299f0.2592000.1561554145.282335-16148227'
-
+import base64
 
 class captchaIdentifier():
     def __init__(self, s):
@@ -44,19 +44,20 @@ class objIdentifier():
         return r.get('result')[0].get(
             'keyword') if r.get('result_num') > 0 else None
 
+def get_image(file_path):
+    with open(file_path, 'rb') as f:
+        return base64.b64encode(f.read())
+
 
 if __name__ == '__main__':
     FilePath = r'../images/'
     from requests import session
     s = session()
-    import base64
+
     import io, sys,os,time
     sys.stdout = io.TextIOWrapper(sys.stdout.detach(), encoding='utf-8')
     sys.stderr = io.TextIOWrapper(sys.stderr.detach(), encoding='utf-8')
 
-    def get_image(file_path):
-        with open(file_path, 'rb') as f:
-            return base64.b64encode(f.read())
 
     ci = captchaIdentifier(s)
     for root, dirs, files in os.walk(FilePath):

@@ -220,8 +220,8 @@ class Work:
         timeArray = time.strptime(times, "%Y-%m-%d %H:%M:%S")
         timeStamp = int(time.mktime(timeArray))
 
-        #with open(FilePath + 'MathTest' + str(timeStamp) + '.jpg', 'wb') as f:
-        with open(FilePath + 'Math' + '.jpg', 'wb') as f:
+        with open(FilePath + 'MathTest' + str(timeStamp) + '.jpg', 'wb') as f:
+        #with open(FilePath + 'Math' + '.jpg', 'wb') as f:
             f.write(response.content)
         return response
 
@@ -286,10 +286,13 @@ if __name__ == '__main__':
     s = session()
     sys.stdout = io.TextIOWrapper(sys.stdout.detach(), encoding='utf-8')
     sys.stderr = io.TextIOWrapper(sys.stderr.detach(), encoding='utf-8')
-    patientName = '杨骚骚'
-    sessionid = 'e03mq9j6nl13t206qf8u2pugq1'
+    patientName = '柯骚骚'
+    sessionid = '3k8f34hpq996719qjf21lcr8j6'
     W = Work(S = s,sessionID = sessionid)
     deptId = W.get_departments_list('儿科门诊')
     doctorID = W.get_doctor_list(deptId,'陈永秀')
     #Get schedule id here
-    print(W.get_doctor_detail(doctorID))
+    #print(W.get_doctor_detail(doctorID))
+    for i in range (0,1000):
+        W.create_verify()
+        time.sleep(5)

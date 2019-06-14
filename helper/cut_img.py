@@ -5,7 +5,7 @@
 # @Last Modified by:   Danny
 # @Last Modified time: 2019-05-24 14:05:50
 
-import cv2,os,time
+import cv2
 
 answers_location = [(150, 355, 0, 206), (150, 355, 206, 412),
                     (150, 355, 412, 618), (150, 355, 618, 824), (355, 558, 0,
@@ -31,22 +31,15 @@ def cut_answer(old_file_name):
     i = 1
     for al in answers_location:
         answer = img[al[0]:al[1], al[2]:al[3]]
-        cv2.imwrite(FilePath + str(i) + '_' + old_file_name, answer)
+        cv2.imwrite(FilePath + old_file_name[0:len(old_file_name)-4] + '_answer_' +str(i)+'.jpg' , answer)
         i = i + 1
 
-def cut_all(prefix):
-    for root, dirs, files in os.walk(FilePath):
-        for file in files:
-            if file[0:len(prefix)] == prefix:
-                cut_question(file,'questionRight'+str(generateTS())+'.jpg','right')
 
-def generateTS():
-    timeStamp = int(round(time.time() * 1000))
-    return timeStamp
 
 
 if __name__ == '__main__':
     #cut_answer('math.jpg')
     #cut_question('MathTest1558629663.jpg', 'MathTest1558629663_right.jpg','right')
-    cut_all('MathTest')
+    #cut_all('MathTest')
     #print(generateTS())
+    cut_answer('demo.jpg')
