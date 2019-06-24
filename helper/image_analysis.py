@@ -23,20 +23,23 @@ class ImageAnalysis:
         :param file_path:
         :return: question text
         '''
-        return self.ci.getText(get_image(file_path))
+        return self.ci.getText(get_image(file_path, 'base64'))
 
     def get_question_type(self, question):
-        if '??' in question:
+        if u'计算' in question:
             return 1
-        elif '??' in question:
+        elif u'应用' in question:
             return 2
         else:
             return 0
 
 
-def get_image(file_path):
+def get_image(file_path, _type='None'):
     with open(file_path, 'rb') as f:
-        return f.read()
+        if _type == 'base64':
+            return base64.b64encode(f.read())
+        else:
+            return f.read()
 
 
 def match_answer(expectationResult, actuallyResultList):
@@ -47,7 +50,7 @@ def match_answer(expectationResult, actuallyResultList):
 
 
 def getExpectationResult(CC, filename):
-    expectationResult = CC.PostPic(get_image(filename), 6001)
+    expectationResult = CC.PostPic(get_image(filename), 6003)
     print(expectationResult)
     if expectationResult.get('err_no') == 0 and expectationResult.get(
             'err_str') == 'OK':
@@ -75,12 +78,25 @@ if __name__ == '__main__':
     from helper import cut_img
     from datas.get_location import get_location
     FilePath = _path + r'/images/'
-    answers = cut_img.cut_answer('captchaSource/math.jpg')
-    question = cut_img.cut_question(
-        'captchaSource/math.jpg', 'captchaSource/MathTest_right.jpg', 'right')
-    cc = CC('stone0214', 'Perf1234', '90031')
-    e = getExpectationResult(cc, question)
-    a = getActuallyResultList(cc, answers)
-    print(e, a)
-    print(match_answer(e, a))
-    print(get_location(7))
+    # 判断问题类型
+    import requests
+    S = requests.session()
+    ia = ImageAnalysis(S)
+    question_type_pic = cut_img.cut_question(
+        'captchaSource/math.jpg', 'captchaSource/MathTest_left.jpg', 'left')
+    #im = get_image(question_type_pic, 'base64')
+    text = ia.get_question_title(question_type_pic)
+    print(text)
+    q_type = ia.get_question_type(text)
+    print(q_type)
+    if q_type == 1:
+        answers = cut_img.cut_answer('captchaSource/math.jpg')
+        question = cut_img.cut_question('captchaSource/math.jpg',
+                                        'captchaSource/MathTest_right.jpg',
+                                        'right')
+        cc = CC('stone0214', 'Perf1234', '90031')
+        e = getExpectationResult(cc, question)
+        a = getActuallyResultList(cc, answers)
+        print(e, a)
+        print(match_answer(e, a))
+        print(get_location(match_answer(e, a)))
