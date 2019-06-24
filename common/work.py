@@ -8,18 +8,18 @@
 @desc:
 '''
 
-from datetime import datetime,timedelta
-import time
+from datetime import datetime, timedelta
+import time, os
+
+FilePath = os.path.abspath(os.path.join(os.getcwd(), ".")) + r'/images'
 
 
-FilePath = r'../images/'
 class Work:
-    def __init__(self,S,sessionID):
+    def __init__(self, S, sessionID):
         self.S = S
         self.sessionID = sessionID
         self.date = (datetime.now() + timedelta(days=14)).strftime("%Y-%m-%d")
         self.host = r'https://huaxi2.mobimedical.cn/index.php'
-
 
     def get_departments_list(self, dep_name):
         '''
@@ -39,8 +39,14 @@ class Work:
             "Cookie":
             "PHPSESSID={}".format(self.sessionID)
         }
-        params = {"g": "WapApi", "m": "Register", "a": "dutyDeptList", "ts": "0"}
-        response = self.S.get(self.host, headers=header, params=params, verify=False).json()
+        params = {
+            "g": "WapApi",
+            "m": "Register",
+            "a": "dutyDeptList",
+            "ts": "0"
+        }
+        response = self.S.get(
+            self.host, headers=header, params=params, verify=False).json()
         if response.get('state') == 1 and response.get('errorMsg') == '成功':
             dep_list = response.get('data')
             for dep in dep_list:
@@ -49,8 +55,7 @@ class Work:
         else:
             raise RuntimeError('Session was invalid.')
 
-
-    def get_doctor_list(self,deptId,doctorName):
+    def get_doctor_list(self, deptId, doctorName):
         '''
         :param sessionid:
         :param deptId:
@@ -80,7 +85,8 @@ class Work:
             "districtCode": "2"
         }
         response = self.S.post(
-            self.host, headers=header, params=params, data=data, verify=False).json()
+            self.host, headers=header, params=params, data=data,
+            verify=False).json()
         if response.get('state') == 1 and response.get('errorMsg') == '成功':
             doctor_list = response.get('data')
             for doctor in doctor_list:
@@ -90,8 +96,7 @@ class Work:
         else:
             raise RuntimeError('Session was invalid.')
 
-
-    def get_doctor_detail(self,doctorid):
+    def get_doctor_detail(self, doctorid):
         '''
         :param sessionid:
         :param doctorid:
@@ -119,7 +124,9 @@ class Work:
             "LabelId": "0",
             "districtCode": "2"
         }
-        response = self.S.post(self.host, headers=header, params=params, data=data, verify=False).json()
+        response = self.S.post(
+            self.host, headers=header, params=params, data=data,
+            verify=False).json()
         if response.get('state') == 1 and response.get('errorMsg') == '成功':
             schedul_list = response.get('data').get('schedul')
             for schedul in schedul_list:
@@ -130,8 +137,7 @@ class Work:
             raise RuntimeError('Session was invalid.')
         return schedulid
 
-
-    def get_card_list(self,patientName):
+    def get_card_list(self, patientName):
         '''
         :param sessionid:
         :param patientName:
@@ -152,7 +158,8 @@ class Work:
             "PHPSESSID={}".format(self.sessionID)
         }
         params = {"g": "WapApi", "m": "Card", "a": "cardList"}
-        response = self.S.get(self.host, headers=header, params=params, verify=False).json()
+        response = self.S.get(
+            self.host, headers=header, params=params, verify=False).json()
         if response.get('state') == 1 and response.get('errorMsg') == '成功':
             card_list = response.get('data').get('cardList')
             for card in card_list:
@@ -161,8 +168,7 @@ class Work:
         else:
             raise RuntimeError('Session was invalid.')
 
-
-    def get_reg_queue_start(self,schedulid):
+    def get_reg_queue_start(self, schedulid):
         '''
         :param sessionid:
         :param schedulid:
@@ -188,10 +194,10 @@ class Work:
             "a": "getRegQueueStart",
             "schedulid": schedulid
         }
-        response = self.S.get(self.host, headers=header, params=params, verify=False).json()
+        response = self.S.get(
+            self.host, headers=header, params=params, verify=False).json()
         if response.get('state') == 1 and response.get('errorMsg') == '成功':
             return response.get('data').get('tn')
-
 
     def create_verify(self):
         header = {
@@ -214,36 +220,37 @@ class Work:
             "a": "createVerify",
             "v": "0.781006613455341"
         }
-        response = self.S.get(self.host, headers=header, params=params, verify=False)
+        response = self.S.get(
+            self.host, headers=header, params=params, verify=False)
 
         times = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         timeArray = time.strptime(times, "%Y-%m-%d %H:%M:%S")
         timeStamp = int(time.mktime(timeArray))
-
-        with open(FilePath + 'MathTest' + str(timeStamp) + '.jpg', 'wb') as f:
-        #with open(FilePath + 'Math' + '.jpg', 'wb') as f:
+        pic_name = FilePath + 'MathTest' + str(timeStamp) + '.jpg'
+        with open(pic_name, 'wb') as f:
+            #with open(FilePath + 'Math' + '.jpg', 'wb') as f:
             f.write(response.content)
-        return response
-
+        return response, pic_name
 
     '''
     change the name of the funtion to follow the URL parameter. This would be easily to locate from charles
     
     '''
-    def submit_Reg(self,location,schedulId,userId,token):
+
+    def submit_Reg(self, location, schedulId, userId, token):
         header = {
             "Accept":
-                "*/*",
+            "*/*",
             "Origin":
-                "https://huaxi2.mobimedical.cn",
+            "https://huaxi2.mobimedical.cn",
             "X-Requested-With":
-                "XMLHttpRequest",
+            "XMLHttpRequest",
             "User-Agent":
-                r"Mozilla/5.0 (Linux; Android 9; ONEPLUS A6010 Build/PKQ1.180716.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/66.0.3359.126 MQQBrowser/6.2 TBS/044607 Mobile Safari/537.36 MMWEBID/9309 MicroMessenger/7.0.3.1400(0x2700033C) Process/tools NetType/WIFI Language/zh_CN",
+            r"Mozilla/5.0 (Linux; Android 9; ONEPLUS A6010 Build/PKQ1.180716.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/66.0.3359.126 MQQBrowser/6.2 TBS/044607 Mobile Safari/537.36 MMWEBID/9309 MicroMessenger/7.0.3.1400(0x2700033C) Process/tools NetType/WIFI Language/zh_CN",
             "Referer":
-                r"https://huaxi2.mobimedical.cn/index.php?g=Wap&m=WxView&d=registerAndAppoint&a=index",
+            r"https://huaxi2.mobimedical.cn/index.php?g=Wap&m=WxView&d=registerAndAppoint&a=index",
             "Cookie":
-                "PHPSESSID={}".format(self.sessionID)
+            "PHPSESSID={}".format(self.sessionID)
         }
         params = {"g": "WapApi", "m": "Register", "a": "submitReg"}
         data = {
@@ -251,9 +258,11 @@ class Work:
             "schedulid": schedulId,
             "userid": userId,
             "is_ai": "",
-            "token":token
+            "token": token
         }
-        response = self.S.post(self.host, headers=header, params=params, data=data, verify=False).json()
+        response = self.S.post(
+            self.host, headers=header, params=params, data=data,
+            verify=False).json()
         assert response.get('state') == 1
         assert response.get('errorMsg') == '成功'
         return response
@@ -261,20 +270,21 @@ class Work:
     def get_unpaid_list(self):
         header = {
             "Accept":
-                "*/*",
+            "*/*",
             "Origin":
-                "https://huaxi2.mobimedical.cn",
+            "https://huaxi2.mobimedical.cn",
             "X-Requested-With":
-                "XMLHttpRequest",
+            "XMLHttpRequest",
             "User-Agent":
-                r"Mozilla/5.0 (Linux; Android 9; ONEPLUS A6010 Build/PKQ1.180716.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/66.0.3359.126 MQQBrowser/6.2 TBS/044607 Mobile Safari/537.36 MMWEBID/9309 MicroMessenger/7.0.3.1400(0x2700033C) Process/tools NetType/WIFI Language/zh_CN",
+            r"Mozilla/5.0 (Linux; Android 9; ONEPLUS A6010 Build/PKQ1.180716.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/66.0.3359.126 MQQBrowser/6.2 TBS/044607 Mobile Safari/537.36 MMWEBID/9309 MicroMessenger/7.0.3.1400(0x2700033C) Process/tools NetType/WIFI Language/zh_CN",
             "Referer":
-                r"https://huaxi2.mobimedical.cn/index.php?g=Wap&m=WxView&d=registerAndAppoint&a=index",
+            r"https://huaxi2.mobimedical.cn/index.php?g=Wap&m=WxView&d=registerAndAppoint&a=index",
             "Cookie":
-                "PHPSESSID={}".format(self.sessionID)
+            "PHPSESSID={}".format(self.sessionID)
         }
         params = {"g": "WapApi", "m": "OrderApi", "a": "waitPayList"}
-        response = self.S.get(self.host, headers=header, params=params, verify=False).json()
+        response = self.S.get(
+            self.host, headers=header, params=params, verify=False).json()
         assert response.get('state') == 1
         assert response.get('errorMsg') == '成功'
         return response
@@ -288,11 +298,11 @@ if __name__ == '__main__':
     sys.stderr = io.TextIOWrapper(sys.stderr.detach(), encoding='utf-8')
     patientName = '柯骚骚'
     sessionid = '3k8f34hpq996719qjf21lcr8j6'
-    W = Work(S = s,sessionID = sessionid)
+    W = Work(S=s, sessionID=sessionid)
     deptId = W.get_departments_list('儿科门诊')
-    doctorID = W.get_doctor_list(deptId,'陈永秀')
+    doctorID = W.get_doctor_list(deptId, '陈永秀')
     #Get schedule id here
     #print(W.get_doctor_detail(doctorID))
-    for i in range (0,1000):
+    for i in range(0, 1000):
         W.create_verify()
         time.sleep(5)
