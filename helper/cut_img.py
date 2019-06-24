@@ -44,6 +44,6 @@ def cut_answer(old_file_name):
 
 if __name__ == '__main__':
     #cut_answer('math.jpg')
-    print(
-        cut_question('captchaSource/math.jpg', 'MathTest_right.jpg', 'right'))
-    print(cut_answer('captchaSource/math.jpg'))
+    #print(cut_question('captchaSource/math.jpg', 'MathTest_right.jpg', 'right'))
+    print (cut_question('MathTest1561370213.jpg','questionLeft.jpg','left'))
+    #print(cut_answer('captchaSource/math.jpg'))

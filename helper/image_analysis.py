@@ -94,7 +94,7 @@ if __name__ == '__main__':
         question = cut_img.cut_question('captchaSource/math.jpg',
                                         'captchaSource/MathTest_right.jpg',
                                         'right')
-        cc = CC('stone0214', 'Perf1234', '90031')
+        cc = CC('stone0214', '12345678', '90031')
         e = getExpectationResult(cc, question)
         a = getActuallyResultList(cc, answers)
         print(e, a)

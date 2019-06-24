@@ -226,7 +226,7 @@ class Work:
         times = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         timeArray = time.strptime(times, "%Y-%m-%d %H:%M:%S")
         timeStamp = int(time.mktime(timeArray))
-        pic_name = FilePath + 'MathTest' + str(timeStamp) + '.jpg'
+        pic_name = FilePath + '/MathTest' + str(timeStamp) + '.jpg'
         with open(pic_name, 'wb') as f:
             #with open(FilePath + 'Math' + '.jpg', 'wb') as f:
             f.write(response.content)
@@ -296,13 +296,18 @@ if __name__ == '__main__':
     s = session()
     sys.stdout = io.TextIOWrapper(sys.stdout.detach(), encoding='utf-8')
     sys.stderr = io.TextIOWrapper(sys.stderr.detach(), encoding='utf-8')
-    patientName = '柯骚骚'
-    sessionid = '3k8f34hpq996719qjf21lcr8j6'
+    patientName = '黄淑华'
+    sessionid = 'bkfhhpnlrt4eh71uuh0btbvvv6'
     W = Work(S=s, sessionID=sessionid)
-    deptId = W.get_departments_list('儿科门诊')
-    doctorID = W.get_doctor_list(deptId, '陈永秀')
+    deptId = W.get_departments_list('麻醉门诊')
+    doctorID = W.get_doctor_list(deptId, '叶燕熙')
+    scheduleId = W.get_doctor_detail(doctorID)
+    tn = W.get_reg_queue_start(scheduleId)
+    print (deptId)
+    print (doctorID)
+    print (scheduleId)
+    print (tn)
+    print (W.create_verify())
     #Get schedule id here
     #print(W.get_doctor_detail(doctorID))
-    for i in range(0, 1000):
-        W.create_verify()
-        time.sleep(5)
+    #W.create_verify()

@@ -58,47 +58,11 @@ class Chaojiying_Client(object):
 
 
 if __name__ == '__main__':
-    #有积分限制，省着点用
 
-    #用户中心>>软件ID 生成一个替换 96001
-    chaojiying = Chaojiying_Client('stone0214', 'Perf1234', '900031')
-    #本地图片文件路径 来替换 a.jpg 有时WIN系统须要//
+    chaojiying = Chaojiying_Client('stone0214', '12345678', '900031')
+
     #im = open('questionRight1560695076827.jpg', 'rb').read()
     im = open('./MathTest_right.jpg', 'rb').read()
     #1902 验证码类型  官方网站>>价格体系 3.4+版 print 后要加()
     print(chaojiying.PostPic(im, 1004))
 
-    #     #im = open('questionRight1560695076827.jpg', 'rb').read()
-    # im = open('demo_answer_2.jpg', 'rb').read()
-# #1902 验证码类型  官方网站>>价格体系 3.4+版 print 后要加()
-# print (chaojiying.PostPic(im, 1004))
-
-#     #im = open('questionRight1560695076827.jpg', 'rb').read()
-# im = open('demo_answer_3.jpg', 'rb').read()
-# #1902 验证码类型  官方网站>>价格体系 3.4+版 print 后要加()
-# print (chaojiying.PostPic(im, 1004))
-
-#     #im = open('questionRight1560695076827.jpg', 'rb').read()
-# im = open('demo_answer_4.jpg', 'rb').read()
-# #1902 验证码类型  官方网站>>价格体系 3.4+版 print 后要加()
-# print (chaojiying.PostPic(im, 1004))
-
-#     #im = open('questionRight1560695076827.jpg', 'rb').read()
-# im = open('demo_answer_5.jpg', 'rb').read()
-# #1902 验证码类型  官方网站>>价格体系 3.4+版 print 后要加()
-# print (chaojiying.PostPic(im, 1004))
-
-#     #im = open('questionRight1560695076827.jpg', 'rb').read()
-# im = open('demo_answer_6.jpg', 'rb').read()
-# #1902 验证码类型  官方网站>>价格体系 3.4+版 print 后要加()
-# print (chaojiying.PostPic(im, 1004))
-
-#     #im = open('questionRight1560695076827.jpg', 'rb').read()
-# im = open('demo_answer_7.jpg', 'rb').read()
-# #1902 验证码类型  官方网站>>价格体系 3.4+版 print 后要加()
-# print (chaojiying.PostPic(im, 1004))
-
-#     #im = open('questionRight1560695076827.jpg', 'rb').read()
-# im = open('demo_answer_8.jpg', 'rb').read()
-# #1902 验证码类型  官方网站>>价格体系 3.4+版 print 后要加()
-# print (chaojiying.PostPic(im, 1004))
