@@ -4,12 +4,14 @@
 # @Date: 2019-05-24 14:35:18
 # @Last Modified by:   Danny
 # @Last Modified time: 2019-05-24 14:35:18
-import json
+import json, os
 
 
 def get_location(index):
     if isinstance(index, int):
-        with open('datas/location.json', 'r') as f:
+        filePath = os.path.abspath(
+            os.path.dirname(__file__)) + r'/location.json'
+        with open(filePath, 'r') as f:
             location_list = json.load(f).get('location')
             if index > len(location_list) - 1:
                 raise IndexError('Out of index!')

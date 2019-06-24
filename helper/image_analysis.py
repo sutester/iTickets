@@ -4,10 +4,10 @@
 # @Date: 2019-05-24 14:09:38
 # @Last Modified by:   Danny
 # @Last Modified time: 2019-05-24 14:09:38
-
-from . import cut_img
-from .BD_Identifier import captchaIdentifier
-from .BD_Identifier import objIdentifier
+import sys, os
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+from helper.BD_Identifier import captchaIdentifier
+from helper.BD_Identifier import objIdentifier
 import base64
 
 
@@ -17,50 +17,70 @@ class ImageAnalysis:
         self.ci = captchaIdentifier(self.session)
         self.oi = objIdentifier(self.session)
 
-    def get_image(self, file_path):
-        with open(file_path, 'rb') as f:
-            return base64.b64encode(f.read())
-
     def get_question_title(self, file_path):
         '''
         To get the text of the question
         :param file_path:
         :return: question text
         '''
-        return self.ci.getText(self.get_image(file_path))
+        return self.ci.getText(get_image(file_path))
 
     def get_question_type(self, question):
-        if '计算' in question:
+        if '??' in question:
             return 1
-        elif '对应' in question:
+        elif '??' in question:
             return 2
         else:
             return 0
 
-    def get_answer(self, question):
-        question = question.replace('?', '')
-        if self.get_question_type(question):
-            if self.get_question_type(question) == 1:
-                question = question.split('结果')[1]
-                if '加' in question:
-                    m, n = question.split('加')
-                    return int(m) + int(n)
-                elif '减' in question:
-                    m, n = question.split('减')
-                    return int(m) - int(n)
-                elif '乘' in question:
-                    m, n = question.split('乘')
-                    return int(m) * int(n)
-                elif '除' in question:
-                    m, n = question.split('除')
-                    return int(m) / int(n)
-                else:
-                    raise SystemError
-            else:
-                question = question.split('图片')[1]
+
+def get_image(file_path):
+    with open(file_path, 'rb') as f:
+        return f.read()
+
+
+def match_answer(expectationResult, actuallyResultList):
+    if expectationResult in actuallyResultList:
+        return actuallyResultList.index(expectationResult)
+    else:
+        return None
+
+
+def getExpectationResult(CC, filename):
+    expectationResult = CC.PostPic(get_image(filename), 6001)
+    print(expectationResult)
+    if expectationResult.get('err_no') == 0 and expectationResult.get(
+            'err_str') == 'OK':
+        return expectationResult.get('pic_str')
+
+
+def getActuallyResultList(CC, fileNames):
+    actuallyResultList = []
+    for filename in fileNames:
+        actuallyResult = CC.PostPic(get_image(filename), 1004)
+        if actuallyResult.get('err_no') == 0 and actuallyResult.get(
+                'err_str') == 'OK':
+            actuallyResultList.append(actuallyResult.get('pic_str'))
+        else:
+            actuallyResultList.append('Error')
+    return actuallyResultList
 
 
 if __name__ == '__main__':
-    FilePath = r'../images/'
-    from requests import session
-    s = session()
+    import io, sys, os, time
+    sys.stdout = io.TextIOWrapper(sys.stdout.detach(), encoding='utf-8')
+    sys.stderr = io.TextIOWrapper(sys.stderr.detach(), encoding='utf-8')
+    _path = os.path.abspath(os.path.join(os.getcwd(), "."))
+    from helper.chaojiying import Chaojiying_Client as CC
+    from helper import cut_img
+    from datas.get_location import get_location
+    FilePath = _path + r'/images/'
+    answers = cut_img.cut_answer('captchaSource/math.jpg')
+    question = cut_img.cut_question(
+        'captchaSource/math.jpg', 'captchaSource/MathTest_right.jpg', 'right')
+    cc = CC('stone0214', 'Perf1234', '90031')
+    e = getExpectationResult(cc, question)
+    a = getActuallyResultList(cc, answers)
+    print(e, a)
+    print(match_answer(e, a))
+    print(get_location(7))
